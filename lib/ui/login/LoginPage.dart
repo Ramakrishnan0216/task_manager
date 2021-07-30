@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/gen/assets.gen.dart';
+import 'package:task_manager/ui/register/RegisterPage.dart';
 import 'package:task_manager/widgets/SubmitButton.dart';
 import 'package:task_manager/widgets/input_fields.dart';
 
@@ -67,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                 InputFieldBox(
                   _passwordController,
                   hintText: "Password",
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.text,
                   enableLabel: true,
                   prefixIcon: Icon(
                     Icons.lock,
@@ -93,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
       height: 90,
       child: Container(
         color: Colors.white,
-        child: Assets.images.user.image(),
+        child: Assets.images.tasks.image(),
       ),
     );
   }
@@ -117,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       child: SubmitElevatedButton(
         buttonText: "LOGIN",
+        onClicked: _onLoginClicked(),
       ),
     );
   }
@@ -129,8 +131,8 @@ class _LoginPageState extends State<LoginPage> {
         children: <TextSpan>[
           TextSpan(
               recognizer: TapGestureRecognizer()
-                ..onTap = () => _onCreateAccountClicked(),
-              text: 'create a new account',
+                ..onTap = () => _onRegisterClicked(),
+              text: 'Register',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
@@ -140,5 +142,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _onCreateAccountClicked() {}
+  _onRegisterClicked() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegisterPage()),
+    );
+  }
+
+  _onLoginClicked() async {}
 }
