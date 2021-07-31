@@ -142,6 +142,19 @@ class DatabaseService {
     db.close();
   }
 
+  Future<void> deleteTask(int id) async {
+    // Get a reference to the database.
+    final db = await _openDatabase();
+
+    await db.delete(
+      Task.tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    await db.close();
+  }
+
   Future<bool> updateUser(TaskUser user) async {
     // Get a reference to the database.
 

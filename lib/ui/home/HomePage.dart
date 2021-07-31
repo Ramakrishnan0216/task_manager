@@ -6,6 +6,7 @@ import 'package:task_manager/models/task.dart';
 import 'package:task_manager/services/DatabaseService.dart';
 import 'package:task_manager/services/SharedPrefService.dart';
 import 'package:task_manager/ui/home/CreateTaskPage.dart';
+import 'package:task_manager/ui/home/UpdateTask.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -67,6 +68,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 SizedBox(height: 40),
                 _title(context),
+                _subTitle(context),
                 SizedBox(height: 40),
                 _tasks.length > 0
                     ? _taskList(context)
@@ -91,12 +93,36 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _subTitle(BuildContext context) {
+    return Text(
+      "Double tap the task to update",
+      style: Theme.of(context).textTheme.bodyText1,
+    );
+  }
+
   Widget _taskList(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: _tasks.length,
       itemBuilder: (context, index) {
-        return taskItem(_tasks[index]);
+        return GestureDetector(
+          child: Dismissible(
+            key: ValueKey(_tasks[index].id),
+            background: Container(
+              color: Colors.red,
+            ),
+            onDismissed: (direction) async {
+              await _taskService.deleteTask(_tasks[index].id);
+              setState(() {
+                _tasks.removeAt(index);
+              });
+            },
+            child: taskItem(_tasks[index]),
+          ),
+          onDoubleTap: () {
+            _goToUpdatepage(_tasks[index]);
+          },
+        );
       },
     );
   }
@@ -152,6 +178,13 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CreateTaskPage()),
+    ).then((value) => _getTaskList());
+  }
+
+  void _goToUpdatepage(Task task) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UpdateTaskPage(task: task)),
     ).then((value) => _getTaskList());
   }
 }
