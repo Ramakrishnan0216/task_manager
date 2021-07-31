@@ -1,6 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:string_validator/string_validator.dart';
 import 'package:task_manager/gen/assets.gen.dart';
+import 'package:task_manager/services/DatabaseService.dart';
+import 'package:task_manager/services/SharedPrefService.dart';
+import 'package:task_manager/ui/MainPage.dart';
+import 'package:task_manager/ui/home/HomePage.dart';
 import 'package:task_manager/ui/register/RegisterPage.dart';
 import 'package:task_manager/widgets/SubmitButton.dart';
 import 'package:task_manager/widgets/input_fields.dart';
@@ -15,11 +23,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final StreamController<bool> _enableStreamController =
+      StreamController<bool>();
+
+  final DatabaseService _databaseService = DatabaseService();
+  final SharedPrefService _prefService = SharedPrefService();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _emailController.addListener(() {
+      _enableStreamController.add(_checkFields());
+    });
+    _passwordController.addListener(() {
+      _enableStreamController.add(_checkFields());
+    });
   }
 
   @override
@@ -31,7 +49,12 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _ui(context);
+    return ProgressHUD(
+      backgroundColor: Theme.of(context).primaryColor,
+      child: Builder(
+        builder: (context) => _ui(context),
+      ),
+    );
   }
 
   Widget _ui(BuildContext context) {
@@ -118,7 +141,10 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       child: SubmitElevatedButton(
         buttonText: "LOGIN",
-        onClicked: _onLoginClicked(),
+        onClicked: () {
+          _onLoginClicked(context);
+        },
+        enableStream: _enableStreamController.stream,
       ),
     );
   }
@@ -142,12 +168,81 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _onRegisterClicked() async {
+  _onRegisterClicked() {
+    _goToRegisterPage();
+  }
+
+  _onLoginClicked(BuildContext context) async {
+    final progress = ProgressHUD.of(context);
+    progress?.show();
+    var isUserExits =
+        await _databaseService.isUserExitsByEmail(_emailController.text.trim());
+    if (isUserExits) {
+      progress?.show();
+      var user = await _databaseService.loginUser(
+          _emailController.text.trim(), _passwordController.text.trim());
+      if (user != null) {
+        progress?.dismiss();
+        await _prefService.setCurrentUserId(user.uid);
+        await _prefService.setUserLoggedIn(true);
+        _goToMainPage();
+      } else {
+        progress?.dismiss();
+        showAlertDialog(context, "Login Failed", "Credential Miss match");
+      }
+    } else {
+      progress?.dismiss();
+      showAlertDialog(context, "Email not registerd",
+          "The Email is not registered yet please register before login");
+    }
+  }
+
+  _goToRegisterPage() async {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => RegisterPage()),
     );
   }
 
-  _onLoginClicked() async {}
+  _goToMainPage() async {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => HomePage()),
+    // );
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => MainPage()),
+    );
+  }
+
+  showAlertDialog(BuildContext context, String title, String content) {
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: [
+        TextButton(
+          child: Text("OK"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  bool _checkFields() {
+    return _emailController.text.isNotEmpty &&
+        isEmail(_emailController.text.trim()) &&
+        _passwordController.text.isNotEmpty &&
+        _passwordController.text.length > 6;
+  }
 }

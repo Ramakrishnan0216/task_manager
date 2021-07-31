@@ -7,7 +7,13 @@ final ThemeData themeData = new ThemeData(
     iconTheme: IconThemeData(color: Colors.green),
     primaryColor: Colors.green,
     primaryColorBrightness: Brightness.light,
+    primaryColorLight: Colors.green,
+    secondaryHeaderColor: Colors.green,
     accentColor: Colors.green,
+    dialogTheme: DialogTheme(
+        titleTextStyle: TextStyle(
+            fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.black)),
+    timePickerTheme: TimePickerThemeData(),
     accentColorBrightness: Brightness.light,
     textTheme: const TextTheme(
       headline4: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w900),

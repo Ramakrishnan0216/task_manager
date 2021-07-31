@@ -9,6 +9,7 @@ class InputFieldBox extends StatefulWidget {
   final int? maxLength;
   final Icon? prefixIcon;
   final bool isPassword;
+  final int? maxLines;
 
   const InputFieldBox(
     this._controller, {
@@ -20,6 +21,7 @@ class InputFieldBox extends StatefulWidget {
     this.maxLength,
     this.prefixIcon,
     this.isPassword = false,
+    this.maxLines = 1,
   }) : super(key: key);
 
   @override
@@ -54,6 +56,7 @@ class _InputFieldBoxState extends State<InputFieldBox> {
         border: _focused ? focuseBorder() : focuseBorder(),
       ),
       child: TextField(
+        maxLines: widget.maxLines,
         obscureText: widget.isPassword,
         maxLength: widget.maxLength,
         textAlign: widget.textAlign,

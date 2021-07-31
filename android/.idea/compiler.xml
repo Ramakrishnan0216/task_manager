@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="1.8">
+      <module name="android.app" target="11" />
+      <module name="android.device_info" target="11" />
+      <module name="android.file_picker" target="11" />
+      <module name="android.flutter_local_notifications" target="11" />
+      <module name="android.flutter_plugin_android_lifecycle" target="11" />
+      <module name="android.path_provider" target="11" />
+      <module name="android.sqflite" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
