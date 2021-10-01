@@ -2,9 +2,9 @@
  A task manager application to create task and keep remainder.
 
  <p float="left">
-  <img src="/img5.png" width="100" />
-  <img src="/img6.png" width="100" /> 
-  <img src="/img7.png" width="100" />
+  <img src="screenshots/img5.png" width="100" />
+  <img src="screenshots/img6.png" width="100" /> 
+  <img src="screenshots/img7.png" width="100" />
 </p>
 
  ![plot](screenshots/img1.jpeg)
